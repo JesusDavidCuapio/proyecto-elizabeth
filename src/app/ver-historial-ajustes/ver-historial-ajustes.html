@@ -1,0 +1,101 @@
+<div class="container">
+  <h1>📋 Historial de Ajustes de Inventario</h1>
+
+  <!-- Indicador de carga -->
+  <div *ngIf="cargando" class="cargando">
+    🔄 Cargando historial...
+  </div>
+
+  <!-- Filtros -->
+  <div class="filtros-container" *ngIf="!cargando">
+    <h2>🔍 Filtrar Historial</h2>
+    
+    <div class="filtros-row">
+      <div class="filtro-grupo">
+        <label for="filtroFecha">Fecha:</label>
+        <input 
+          type="date" 
+          id="filtroFecha" 
+          [(ngModel)]="filtroFecha" 
+          (change)="filtrarHistorial()"
+        />
+      </div>
+
+      <div class="filtro-grupo">
+        <label for="filtroUnidadMedida">Tipo de unidad:</label>
+        <select id="filtroUnidadMedida" [(ngModel)]="filtroUnidadMedida" (change)="filtrarHistorial()">
+          <option value="">Todas las unidades</option>
+          <option *ngFor="let unidad of tiposUnidad" [value]="unidad">{{ unidad }}</option>
+        </select>
+      </div>
+
+      <div class="filtro-grupo">
+        <label for="filtroTipoProducto">Tipo de producto:</label>
+        <select id="filtroTipoProducto" [(ngModel)]="filtroTipoProducto" (change)="filtrarHistorial()">
+          <option value="">Todos los productos</option>
+          <option *ngFor="let tipo of tiposProducto" [value]="tipo">{{ tipo }}</option>
+        </select>
+      </div>
+
+      <div class="filtro-grupo">
+        <button type="button" class="btn-limpiar" (click)="limpiarFiltros()">
+          🗑️ Limpiar filtros
+        </button>
+      </div>
+    </div>
+
+    <div class="filtros-info">
+      Mostrando {{ historialFiltrado.length }} de {{ historial.length }} ajustes
+    </div>
+  </div>
+
+    <!-- Tabla del historial CON SCROLL OPTIMIZADO -->
+  <div class="historial-section" *ngIf="!cargando && historial.length > 0">
+    <div class="table-scroll-container">
+      <table class="historial-table">
+        <thead>
+          <tr>
+            <th>Fecha</th>
+            <th>Código</th>
+            <th>Producto</th>
+            <th>Tipo</th>
+            <th>Unidad</th>
+            <th>Movimiento</th>
+            <th>Cantidad</th>
+            <th>Motivo</th>
+            <th>Empleado</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr *ngFor="let item of historialFiltrado; trackBy: trackByFn">
+            <td>{{ item.fecha_movimiento | date:'dd/MM/yyyy' }}</td>
+            <td><strong>{{ item.codigo }}</strong></td>
+            <td>{{ item.producto_nombre }}</td>
+            <td><span class="tipo-producto">{{ item.tipo_producto }}</span></td>
+            <td><span class="unidad-medida">{{ item.unidad_medida }}</span></td>
+            <td>
+              <span class="tipo-badge" [class.entrada]="item.tipo_movimiento === 'Entrada'" [class.salida]="item.tipo_movimiento === 'Salida'">
+                {{ item.tipo_movimiento }}
+              </span>
+            </td>
+            <td><strong>{{ item.cantidad }}</strong></td>
+            <td>{{ item.motivo }}</td>
+            <td>{{ item.empleado_nombre }}</td>
+          </tr>
+          <tr *ngIf="!historialFiltrado.length && historial.length > 0">
+            <td colspan="9" style="text-align:center; color: #888; padding: 20px;">
+              ❌ No se encontraron ajustes con los filtros aplicados
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <!-- Mensaje cuando no hay datos -->
+  <div *ngIf="!cargando && historial.length === 0" class="sin-resultados">
+    📋 No hay ajustes registrados en el historial
+  </div>
+
+  <button class="back-link" (click)="volver()">← Volver al Panel</button>
+</div>

@@ -1,0 +1,138 @@
+<div *ngIf="!mostrarCrearTrabajador
+      && !mostrarLoginTrabajador
+      && !mostrarCajero
+      && !mostrarInventario
+      && !mostrarRegistrarVenta
+      && !mostrarAuxiliar
+      && !mostrarRecibirProductos
+      && !mostrarAlmacenista
+      && !mostrarActualizarExistencias
+      && !mostrarReportarProducto
+      && !mostrarAdministrador
+      && !mostrarGestionarEmpleados
+      && !mostrarVerReportes
+      && !mostrarVerVentas
+      && !mostrarVerReportesProductos
+      && !mostrarAdministrarInventario
+      && !mostrarVerHistorialRecepciones
+      && !mostrarVerHistorialAjustes">
+
+  <div class="logo-text">🛍️ Tienda Elizabeth</div>
+  <div class="container">
+    <h1>👋 Acceso de Empleado</h1>
+    <p>Selecciona una opción:</p>
+    <button class="btn" (click)="mostrarLogin()">Iniciar Sesión</button>
+    <button class="btn" (click)="mostrarCrear()">Crear Perfil</button>
+  </div>
+</div>
+
+<app-crear-trabajador
+  *ngIf="mostrarCrearTrabajador"
+  (volverEvent)="volver()"
+></app-crear-trabajador>
+
+<app-login-trabajador
+  *ngIf="mostrarLoginTrabajador"
+  (volverEvent)="volver()"
+  (loginEvent)="onLogin($event)"
+></app-login-trabajador>
+
+<app-cajero
+  *ngIf="mostrarCajero"
+  (volverEvent)="volver()"
+  (consultarInventario)="mostrarPanelInventario('cajero')"
+  (registrarVenta)="mostrarPanelRegistrarVenta()"
+></app-cajero>
+
+<app-registrar-venta
+  *ngIf="mostrarRegistrarVenta"
+  (volverEvent)="volver()"
+></app-registrar-venta>
+
+<app-inventario
+  *ngIf="mostrarInventario"
+  (volverEvent)="volver()"
+></app-inventario>
+
+<app-auxiliar
+  *ngIf="mostrarAuxiliar"
+  (volverEvent)="volver()"
+  (consultarInventario)="mostrarPanelInventario('auxiliar')"
+  (recibirProductos)="mostrarPanelRecibirProductos()"
+></app-auxiliar>
+
+<app-recibir-productos
+  *ngIf="mostrarRecibirProductos"
+  (volverEvent)="volver()"
+  (verHistorialEvent)="mostrarPanelHistorialRecepciones()"
+></app-recibir-productos>
+
+<app-ver-historial-recepciones
+  *ngIf="mostrarVerHistorialRecepciones"
+  (volverEvent)="volver()"
+></app-ver-historial-recepciones>
+
+
+<app-almacenista
+  *ngIf="mostrarAlmacenista"
+  (volverEvent)="volver()"
+  (consultarInventario)="mostrarPanelInventario('almacenista')"
+  (actualizarExistencias)="mostrarPanelActualizarExistencias()"
+  (reportarProducto)="mostrarPanelReportarProducto()"
+></app-almacenista>
+
+<app-actualizar-existencias
+  *ngIf="mostrarActualizarExistencias"
+  (volverEvent)="volver()"
+  (verHistorialEvent)="mostrarPanelHistorialAjustes()"
+></app-actualizar-existencias>
+
+<app-reportar-producto
+  *ngIf="mostrarReportarProducto"
+  (volverEvent)="volver()"
+></app-reportar-producto>
+
+<app-administrador
+  *ngIf="mostrarAdministrador"
+  (administrarInventario)="mostrarPanelAdministrarInventario()"
+  (verReportes)="mostrarPanelVerReportes()"
+  (gestionarEmpleados)="mostrarPanelGestionarEmpleados()"
+  (volverEvent)="volver()"
+></app-administrador>
+
+<app-gestionar-empleados
+  *ngIf="mostrarGestionarEmpleados"
+  (agregarEmpleado)="mostrarPanelCrearTrabajadorDesdeGestionar()"
+  (volverEvent)="volver()"
+></app-gestionar-empleados>
+
+<app-ver-reportes
+  *ngIf="mostrarVerReportes"
+  (verVentas)="mostrarPanelVerVentas()"
+  (verReportesProductos)="mostrarPanelVerReportesProductos()"
+  (volverEvent)="volver()"
+></app-ver-reportes>
+
+<app-ver-ventas
+  *ngIf="mostrarVerVentas"
+  (volverEvent)="volver()"
+></app-ver-ventas>
+
+<app-ver-reportes-productos
+  *ngIf="mostrarVerReportesProductos"
+  (volverEvent)="volver()"
+></app-ver-reportes-productos>
+
+<app-administrar-inventario
+  *ngIf="mostrarAdministrarInventario"
+  (consultarInventarioEvent)="mostrarPanelInventario('admin')"
+  (recibirProductosEvent)="mostrarPanelRecibirProductos('admin')"
+  (actualizarExistenciasEvent)="mostrarPanelActualizarExistencias('admin')"
+  (reportarProductoEvent)="mostrarPanelReportarProducto('admin')"
+  (volverEvent)="volver()"
+></app-administrar-inventario>
+
+<app-ver-historial-ajustes
+  *ngIf="mostrarVerHistorialAjustes"
+  (volverEvent)="volver()"
+></app-ver-historial-ajustes>

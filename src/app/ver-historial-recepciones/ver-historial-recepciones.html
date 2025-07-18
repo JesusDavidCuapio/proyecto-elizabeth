@@ -1,0 +1,84 @@
+<div class="container">
+  <h1>📋 Historial de Recepciones</h1>
+
+  <!-- Filtros -->
+  <div class="filtros-container" *ngIf="historial.length > 0">
+    <div class="filtros-row">
+      <div class="filtro-grupo">
+        <label for="filtroFecha">Fecha:</label>
+        <input 
+          type="date" 
+          id="filtroFecha" 
+          [(ngModel)]="filtroFecha" 
+          (change)="filtrarHistorial()"
+        />
+      </div>
+
+      <div class="filtro-grupo">
+        <label for="filtroUnidadMedida">Tipo de unidad:</label>
+        <select id="filtroUnidadMedida" [(ngModel)]="filtroUnidadMedida" (change)="filtrarHistorial()">
+          <option value="">Todas las unidades</option>
+          <option *ngFor="let unidad of tiposUnidad" [value]="unidad">{{ unidad }}</option>
+        </select>
+      </div>
+
+      <div class="filtro-grupo">
+        <label for="filtroTipoProducto">Tipo de producto:</label>
+        <select id="filtroTipoProducto" [(ngModel)]="filtroTipoProducto" (change)="filtrarHistorial()">
+          <option value="">Todos los productos</option>
+          <option *ngFor="let tipo of tiposProducto" [value]="tipo">{{ tipo }}</option>
+        </select>
+      </div>
+
+      <div class="filtro-grupo">
+        <button type="button" class="btn-limpiar" (click)="limpiarFiltros()">
+          🗑️ Limpiar filtros
+        </button>
+      </div>
+    </div>
+
+    <div class="filtros-info">
+      Mostrando {{ historialFiltrado.length }} de {{ historial.length }} recepciones
+    </div>
+  </div>
+
+  <!-- Tabla con scroll -->
+  <div class="table-scroll-container">
+    <table>
+      <thead>
+        <tr>
+          <th>Fecha</th>
+          <th>Código</th>
+          <th>Producto</th>
+          <th>Cantidad</th>
+          <th>Unidad</th>
+          <th>Tipo</th>
+          <th>Empleado</th>
+          <th>Observaciones</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr *ngFor="let item of historialFiltrado">
+          <td>{{ item.fecha_recepcion | date:'dd/MM/yyyy' }}</td>
+          <td>{{ item.codigo }}</td>
+          <td>{{ item.producto_nombre }}</td>
+          <td>{{ item.cantidad_recibida }}</td>
+          <td>{{ item.unidad_medida }}</td>
+          <td>{{ item.tipo_producto }}</td>
+          <td>{{ item.empleado_nombre }}</td>
+          <td>{{ item.observaciones || 'Sin observaciones' }}</td>
+        </tr>
+        <tr *ngIf="!historialFiltrado.length && historial.length > 0">
+          <td colspan="8" style="text-align:center; color: #888;">
+            No se encontraron recepciones con los filtros aplicados
+          </td>
+        </tr>
+        <tr *ngIf="!historial.length">
+          <td colspan="8" style="text-align:center; color: #888;">{{ mensaje }}</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <button class="back-link" (click)="volver()">← Volver a Recibir Productos</button>
+</div>

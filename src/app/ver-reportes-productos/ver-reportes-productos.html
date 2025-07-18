@@ -1,0 +1,80 @@
+<h1>📦 Reportes de Productos Dañados o Faltantes</h1>
+
+<!-- Filtros -->
+<div class="filtros-container" *ngIf="reportes.length > 0">
+  <div class="filtros-row">
+    <div class="filtro-grupo">
+      <label for="filtroTipoReporte">Tipo de reporte:</label>
+      <select id="filtroTipoReporte" [(ngModel)]="filtroTipoReporte" (change)="filtrarReportes()">
+        <option value="">Todos los tipos</option>
+        <option *ngFor="let tipo of tiposReporte" [value]="tipo">{{ tipo }}</option>
+      </select>
+    </div>
+
+    <div class="filtro-grupo">
+      <label for="filtroFecha">Fecha:</label>
+      <input 
+        type="date" 
+        id="filtroFecha" 
+        [(ngModel)]="filtroFecha" 
+        (change)="filtrarReportes()"
+      />
+    </div>
+
+    <div class="filtro-grupo">
+      <label for="filtroTipoProducto">Tipo de producto:</label>
+      <select id="filtroTipoProducto" [(ngModel)]="filtroTipoProducto" (change)="filtrarReportes()">
+        <option value="">Todos los productos</option>
+        <option *ngFor="let tipo of tiposProducto" [value]="tipo">{{ tipo }}</option>
+      </select>
+    </div>
+
+    <div class="filtro-grupo">
+      <button type="button" class="btn-limpiar" (click)="limpiarFiltros()">
+        🗑️ Limpiar filtros
+      </button>
+    </div>
+  </div>
+
+  <div class="filtros-info">
+    Mostrando {{ reportesFiltrados.length }} de {{ reportes.length }} reportes
+  </div>
+</div>
+
+<!-- Tabla con scroll -->
+<div class="table-scroll-container">
+  <table>
+    <thead>
+      <tr>
+        <th>Código del Producto</th>
+        <th>Nombre del Producto</th>
+        <th>Tipo de Producto</th>
+        <th>Tipo de Reporte</th>
+        <th>Descripción</th>
+        <th>Empleado</th>
+        <th>Fecha</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr *ngFor="let r of reportesFiltrados">
+        <td>{{ r.codigo }}</td>
+        <td>{{ r.nombre_producto }}</td>
+        <td>{{ r.tipo_producto }}</td>
+        <td>{{ r.tipo_reporte }}</td>
+        <td>{{ r.descripcion }}</td>
+        <td>{{ r.empleado_reporta }}</td>
+        <td>{{ r.fecha_reporte }}</td>
+      </tr>
+      <tr *ngIf="!reportesFiltrados.length && reportes.length > 0">
+        <td colspan="7" style="text-align:center; color: #888;">
+          No se encontraron reportes con los filtros aplicados
+        </td>
+      </tr>
+      <tr *ngIf="!reportes.length">
+        <td colspan="7" style="text-align:center; color: #888;">{{ mensaje }}</td>
+      </tr>
+    </tbody>
+  </table>
+</div>
+
+<button class="back-link" (click)="volver()">← Volver a Reportes</button>

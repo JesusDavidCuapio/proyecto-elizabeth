@@ -1,0 +1,82 @@
+<div class="container">
+  <h2>🚨 Reportar Producto</h2>
+  
+  <form (ngSubmit)="enviarReporte()" class="form-reporte" autocomplete="off">
+    
+    <!-- Buscador de productos -->
+    <label>Producto:</label>
+    <div class="search-container">
+      <input
+        type="text"
+        [(ngModel)]="terminoBusqueda"
+        name="busqueda"
+        placeholder="Buscar por código (PRD001) o nombre..."
+        class="form-input"
+        (input)="buscarProductos()"
+        (blur)="ocultarSugerencias()"
+        autocomplete="off"
+      />
+      
+      <!-- Lista de sugerencias -->
+      <div class="sugerencias-container" *ngIf="mostrarSugerencias && productosSugeridos.length > 0">
+        <div
+          *ngFor="let producto of productosSugeridos"
+          class="sugerencia-item"
+          (click)="seleccionarProducto(producto)"
+        >
+          <div class="sugerencia-principal">
+            <strong>{{ producto.codigo }}</strong> - {{ producto.nombre }}
+          </div>
+          <div class="sugerencia-detalles">
+            <span>Precio: {{ producto.precio | currency:'MXN' }}</span>
+            <span>Stock: {{ producto.stock_actual }}</span>
+          </div>
+        </div>
+      </div>
+      
+      <!-- Mensaje cuando no hay resultados -->
+      <div class="sin-resultados" *ngIf="mostrarSugerencias && productosSugeridos.length === 0 && terminoBusqueda.length >= 2">
+        <p>❌ No se encontraron productos con "{{ terminoBusqueda }}"</p>
+      </div>
+    </div>
+
+     <!-- Información del producto seleccionado -->
+    <div class="producto-seleccionado" *ngIf="productoSeleccionado">
+      <h3>📦 Producto Seleccionado</h3>
+      <div class="producto-info">
+        <div><strong>Código:</strong> {{ productoSeleccionado.codigo }}</div>
+        <div><strong>Nombre:</strong> {{ productoSeleccionado.nombre }}</div>
+        <div><strong>Precio:</strong> {{ productoSeleccionado.precio | currency:'MXN' }}</div>
+        <div><strong>Stock actual:</strong> {{ productoSeleccionado.stock_actual }}</div>
+        <div><strong>Unidad:</strong> {{ productoSeleccionado.unidad_medida }}</div>
+        <div><strong>Tipo de producto:</strong> {{ productoSeleccionado.tipo_producto }}</div>
+      </div>
+    </div>
+
+    <label>Tipo de reporte:
+      <select [(ngModel)]="form.tipo_reporte" name="tipo_reporte" required>
+        <option value="" disabled selected>Selecciona un tipo</option>
+        <option *ngFor="let t of tipos" [value]="t">{{ t }}</option>
+      </select>
+    </label>
+
+    <label>Descripción:
+      <textarea 
+        [(ngModel)]="form.descripcion" 
+        name="descripcion" 
+        required 
+        placeholder="Describe el problema..."
+      ></textarea>
+    </label>
+
+    <button type="submit" class="btn-principal">
+      Enviar reporte
+    </button>
+  </form>
+
+  <div class="mensaje" *ngIf="mensaje" [class.success]="mensaje.includes('✅')" [class.error]="mensaje.includes('❌')">
+    {{ mensaje }}
+  </div>
+
+  <a href="#" (click)="volver()" class="back-link">← Volver</a>
+</div>

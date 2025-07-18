@@ -1,0 +1,265 @@
+.container {
+  padding: 20px;
+  max-width: 1200px;
+  margin: 0 auto;
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+}
+
+h1 {
+  text-align: center;
+  color: var(--primary-color);
+  margin-bottom: 30px;
+  font-size: 2.5rem;
+  text-shadow: 0 2px 4px rgba(0,0,0,0.1);
+}
+
+h2 {
+  color: var(--primary-color);
+  margin-bottom: 20px;
+  font-size: 1.5rem;
+}
+
+/* Filtros */
+.filtros-container {
+  background: #f8f9fa;
+  padding: 20px;
+  border-radius: 12px;
+  margin-bottom: 25px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+.filtros-row {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 20px;
+  align-items: end;
+}
+
+.filtro-grupo {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.filtro-grupo label {
+  font-weight: 600;
+  color: var(--primary-color);
+  font-size: 0.9rem;
+}
+
+.filtro-grupo select,
+.filtro-grupo input {
+  padding: 10px 15px;
+  border: 2px solid #ddd;
+  border-radius: 8px;
+  font-size: 0.9rem;
+  background: white;
+  transition: border-color 0.3s ease;
+}
+
+.filtro-grupo select:focus,
+.filtro-grupo input:focus {
+  outline: none;
+  border-color: var(--primary-color);
+}
+
+.btn-limpiar {
+  background: #e74c3c;
+  color: white;
+  border: none;
+  padding: 10px 20px;
+  border-radius: 8px;
+  cursor: pointer;
+  font-size: 0.9rem;
+  font-weight: 600;
+  transition: all 0.3s ease;
+}
+
+.btn-limpiar:hover {
+  background: #c0392b;
+  transform: translateY(-2px);
+}
+
+.filtros-info {
+  margin-top: 15px;
+  text-align: center;
+  color: #666;
+  font-weight: 600;
+  background: white;
+  padding: 10px;
+  border-radius: 8px;
+}
+
+/* Historial */
+.historial-section {
+  background: white;
+  border-radius: 15px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  overflow: hidden;
+}
+
+/* Contenedor con scroll para tabla - OPTIMIZADO */
+.table-scroll-container {
+  max-height: 400px; /* Altura máxima antes de mostrar scroll */
+  overflow-y: auto; /* Scroll vertical */
+  overflow-x: auto; /* Scroll horizontal si es necesario */
+  border: 1px solid #ddd;
+  border-radius: 8px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  background: white;
+  margin: 20px 0;
+}
+
+/* Estilos para la barra de scroll - SIGUIENDO PATRÓN DEL PROYECTO */
+.table-scroll-container::-webkit-scrollbar {
+  width: 12px;
+  height: 12px;
+}
+
+.table-scroll-container::-webkit-scrollbar-track {
+  background: #f1f1f1;
+  border-radius: 6px;
+}
+
+.table-scroll-container::-webkit-scrollbar-thumb {
+  background: #3498db;
+  border-radius: 6px;
+  transition: background 0.3s ease;
+}
+
+.table-scroll-container::-webkit-scrollbar-thumb:hover {
+  background: #2980b9;
+}
+
+.table-scroll-container::-webkit-scrollbar-corner {
+  background: #f1f1f1;
+}
+
+/* Mejorar la tabla dentro del contenedor */
+.historial-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.9rem;
+  min-width: 800px; /* Ancho mínimo para activar scroll horizontal */
+}
+
+/* Fijar el encabezado de la tabla */
+.historial-table thead th {
+  position: sticky;
+  top: 0;
+  z-index: 10;
+  background: linear-gradient(135deg, var(--primary-color), var(--secondary-color)) !important;
+  color: white !important;
+  padding: 15px 12px;
+  text-align: left;
+  font-weight: 600;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.historial-table td {
+  padding: 12px;
+  border-bottom: 1px solid #eee;
+  vertical-align: middle;
+}
+
+/* Alternancia de colores en las filas */
+.historial-table tr:nth-child(even) {
+  background-color: #f8f9fa;
+}
+
+.historial-table tr:hover {
+  background-color: #e3f2fd;
+  transition: background-color 0.2s ease;
+}
+
+/* Scrollbar para navegadores Firefox */
+.table-scroll-container {
+  scrollbar-width: thin;
+  scrollbar-color: #3498db #f1f1f1;
+}
+
+/* Badges */
+.tipo-badge {
+  padding: 6px 12px;
+  border-radius: 20px;
+  font-size: 0.8rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  display: inline-block;
+  min-width: 80px;
+  text-align: center;
+}
+
+.tipo-badge.entrada {
+  background: #27ae60;
+  color: white;
+}
+
+.tipo-badge.salida {
+  background: #e74c3c;
+  color: white;
+}
+
+/* Estados */
+.cargando {
+  text-align: center;
+  padding: 40px;
+  font-size: 1.2rem;
+  color: var(--primary-color);
+  font-weight: 600;
+}
+
+.sin-resultados {
+  text-align: center;
+  padding: 40px;
+  font-size: 1.1rem;
+  color: #666;
+  background: #f8f9fa;
+  border-radius: 12px;
+  margin: 20px 0;
+}
+
+/* Botón volver */
+.back-link {
+  display: block;
+  margin: 30px auto;
+  padding: 12px 30px;
+  background: linear-gradient(135deg, var(--secondary-color), var(--primary-color));
+  color: white;
+  border: none;
+  border-radius: 25px;
+  font-size: 1rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  text-decoration: none;
+}
+
+.back-link:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 25px rgba(0, 0, 0, 0.2);
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  .container {
+    padding: 15px;
+  }
+  
+  h1 {
+    font-size: 2rem;
+  }
+  
+  .filtros-row {
+    grid-template-columns: 1fr;
+  }
+  
+  .historial-table {
+    font-size: 0.8rem;
+  }
+  
+  .historial-table th,
+  .historial-table td {
+    padding: 8px;
+  }
+}

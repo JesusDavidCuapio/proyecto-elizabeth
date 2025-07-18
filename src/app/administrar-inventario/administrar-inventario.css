@@ -1,0 +1,114 @@
+:root {
+  --primary-color: #264653;
+  --secondary-color: #2a9d8f;
+  --accent-color: #e9c46a;
+  --bg-gradient-start: #f4f1de;
+  --bg-gradient-end: #e9ecef;
+}
+
+body {
+  margin: 0;
+  font-family: 'Segoe UI', sans-serif;
+  background: linear-gradient(135deg, var(--bg-gradient-start), var(--bg-gradient-end));
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 40px 20px;
+}
+
+body::before {
+  content: "";
+  position: fixed;
+  width: 200%;
+  height: 200%;
+  background: radial-gradient(circle at 20% 20%, #2a9d8f33, transparent),
+              radial-gradient(circle at 80% 80%, #e9c46a33, transparent),
+              radial-gradient(circle at 60% 30%, #26465333, transparent);
+  animation: backgroundAnim 20s linear infinite;
+  z-index: -1;
+}
+
+@keyframes backgroundAnim {
+  0% { transform: translate(0, 0); }
+  50% { transform: translate(-20%, -10%); }
+  100% { transform: translate(0, 0); }
+}
+
+h1 {
+  font-size: 32px;
+  color: var(--primary-color);
+  font-family: 'Georgia', serif;
+  background: linear-gradient(90deg, var(--primary-color), var(--secondary-color));
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  margin-bottom: 30px;
+}
+
+.btn-container {
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+  width: 100%;
+  max-width: 400px;
+  margin: 0 auto;
+}
+
+.btn {
+  width: 100%;
+  padding: 16px 0;
+  background: linear-gradient(to right, var(--primary-color), var(--secondary-color));
+  color: #fff;
+  border: none;
+  border-radius: 14px;
+  font-size: 18px;
+  font-weight: bold;
+  cursor: pointer;
+  text-align: center;
+  text-decoration: none;
+  box-shadow: 0 6px 20px rgba(38, 70, 83, 0.15);
+  transition: transform 0.2s, background 0.3s;
+  letter-spacing: 1px;
+}
+
+.btn:hover {
+  transform: scale(1.04);
+  background: linear-gradient(to right, var(--secondary-color), var(--primary-color));
+}
+
+.back-link {
+  margin-top: 30px;
+  text-align: center;
+  color: var(--secondary-color);
+  font-weight: 600;
+  text-decoration: none;
+  font-size: 16px;
+  background: none;
+  border: none;
+  cursor: pointer;
+  transition: color 0.3s;
+}
+
+.back-link:hover {
+  color: var(--primary-color);
+  text-decoration: underline;
+}
+
+.container {
+  background: #ffffffcc;
+  backdrop-filter: blur(8px);
+  padding: 40px 30px;
+  border-radius: 20px;
+  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.2);
+  max-width: 500px;
+  width: 100%;
+  margin: 0 auto;
+  margin-top: 30px;
+  animation: fadeIn 1s ease-in-out;
+  text-align: center;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(-30px);}
+  to { opacity: 1; transform: translateY(0);}
+}

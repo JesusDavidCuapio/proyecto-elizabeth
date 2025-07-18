@@ -1,0 +1,96 @@
+<h1>📦 Consultar Inventario</h1>
+
+<!-- Mensaje de estado -->
+<div *ngIf="mensaje" class="mensaje" [class.error]="mensaje.includes('❌')">
+  {{ mensaje }}
+</div>
+
+<!-- Indicador de carga -->
+<div *ngIf="cargando" class="cargando">
+  🔄 Cargando inventario...
+</div>
+
+<!-- Estadísticas rápidas -->
+<div class="stats-container" *ngIf="!cargando && productos.length > 0">
+  <div class="stat-box">
+    <h3>{{ productos.length }}</h3>
+    <p>Productos Total</p>
+  </div>
+  <div class="stat-box">
+    <h3>{{ productosBajoStock }}</h3>
+    <p>Bajo Stock</p>
+  </div>
+  <div class="stat-box">
+    <h3>{{ productosFiltrados.length }}</h3>
+    <p>Mostrando</p>
+  </div>
+</div>
+
+<!-- Filtros avanzados -->
+<div class="filtros-inventario" *ngIf="!cargando && productos.length > 0">
+  <input 
+    type="search" 
+    [(ngModel)]="filtro" 
+    (input)="filtrarProductos()"
+    placeholder="Buscar por nombre o código..." 
+  />
+
+  <select [(ngModel)]="filtroTipo" (change)="filtrarProductos()">
+    <option value="">Todos los tipos</option>
+    <option *ngFor="let tipo of tiposDisponibles" [value]="tipo">{{ tipo }}</option>
+  </select>
+
+  <select [(ngModel)]="filtroEstado" (change)="filtrarProductos()">
+    <option value="">Todos los estados</option>
+    <option value="Stock normal">Stock normal</option>
+    <option value="Bajo stock">Bajo stock</option>
+  </select>
+</div>
+
+<!-- Tabla con scroll -->
+<div class="tabla-scroll">
+  <table aria-label="Listado de productos en inventario">
+    <thead>
+      <tr>
+        <th>Código</th>
+        <th>Producto</th>
+        <th>Tipo de producto</th>
+        <th>Stock Actual</th>
+        <th>Stock Mínimo</th>
+        <th>Unidad</th>
+        <th>Precio (MXN)</th>
+        <th>Estado</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr *ngFor="let producto of productosFiltrados" 
+          [class.bajo-stock]="producto.estado_stock === 'Bajo stock'">
+        <td><strong>{{ producto.codigo }}</strong></td>
+        <td>{{ producto.nombre }}</td>
+        <td>{{ producto.tipo_producto }}</td>
+        <td>{{ producto.cantidad }} {{ producto.unidad_medida }}</td>
+        <td>{{ producto.stock_minimo }} {{ producto.unidad_medida }}</td>
+        <td>{{ producto.unidad_medida }}</td>
+        <td>{{ producto.precio | currency:'MXN' }}</td>
+        <td>
+          <span class="estado-badge" 
+                [class.bajo]="producto.estado_stock === 'Bajo stock'"
+                [class.normal]="producto.estado_stock === 'Stock normal'">
+            {{ producto.estado_stock }}
+          </span>
+        </td>
+      </tr>
+    </tbody>
+  </table>
+</div>
+
+<!-- Mensaje cuando no hay productos -->
+<div *ngIf="!cargando && productosFiltrados.length === 0 && productos.length > 0" class="sin-resultados">
+  📝 No se encontraron productos con el término "{{ filtro }}"
+</div>
+
+<div *ngIf="!cargando && productos.length === 0" class="sin-resultados">
+  📦 No hay productos en el inventario
+</div>
+
+<button class="back-btn" (click)="volver()">← Volver</button>

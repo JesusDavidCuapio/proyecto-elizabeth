@@ -1,0 +1,313 @@
+<div class="container">
+  <h1>📦 Recibir Productos al inventario / nuevo - existente</h1>
+
+  <!-- Mensaje de estado -->
+  <div *ngIf="mensaje" class="mensaje" [class.success]="mensaje.includes('✅')" [class.error]="mensaje.includes('❌')">
+    {{ mensaje }}
+  </div>
+
+  <!-- Formulario de búsqueda con autocompletado -->
+  <div class="form-section" *ngIf="tipoFormulario === 'buscar'">
+    <h2>🔍 Buscar Producto</h2>
+    
+    <div class="form-group">
+      <label for="codigo">Buscar por código o nombre:</label>
+      <div class="instrucciones">
+        💡 Escribe al menos 2 caracteres para buscar. Si no encuentras el producto, puedes crear uno nuevo.
+      </div>
+      <div class="search-container">
+        <input
+          type="text"
+          id="codigo"
+          [(ngModel)]="codigo"
+          placeholder="Ej. PRD001 o Café Instantáneo"
+          class="form-input"
+          (input)="buscarProductosDinamico()"
+          (blur)="ocultarSugerencias()"
+          [disabled]="cargando"
+          autocomplete="off"
+        />
+        
+        <!-- Lista de sugerencias -->
+        <div class="sugerencias-container" *ngIf="mostrarSugerencias && productosSugeridos.length > 0">
+          <div 
+            *ngFor="let producto of productosSugeridos" 
+            class="sugerencia-item"
+            (click)="seleccionarProducto(producto)"
+          >
+            <div class="sugerencia-principal">
+              <strong>{{ producto.codigo }}</strong> - {{ producto.nombre }}
+            </div>
+            <div class="sugerencia-detalles">
+              <span>Stock: {{ producto.stock_actual }}</span>
+              <span>Precio: {{ producto.precio | currency:'MXN' }}</span>
+              <span>{{ producto.unidad_medida }}</span>
+            </div>
+          </div>
+        </div>
+        
+        <!-- Mensaje cuando no hay resultados - ÚNICO BOTÓN -->
+        <div class="sin-resultados" *ngIf="mostrarSugerencias && productosSugeridos.length === 0 && terminoBusqueda.length >= 2">
+          <p>❌ No se encontraron productos con "{{ terminoBusqueda }}"</p>
+          <button type="button" class="btn-crear-nuevo" (click)="mostrarFormularioNuevo()">
+            ➕ Crear producto nuevo
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Formulario para producto existente con scroll -->
+  <div class="scroll-container" *ngIf="tipoFormulario === 'producto-existente'">
+    <div class="form-section">
+      <h2>📈 Aumentar Stock - Producto Existente</h2>
+      
+      <div class="producto-info">
+        <div class="info-item">
+          <strong>Código:</strong> {{ productoExistente?.codigo }}
+        </div>
+        <div class="info-item">
+          <strong>Nombre:</strong> {{ productoExistente?.nombre }}
+        </div>
+        <div class="info-item">
+          <strong>Precio:</strong> {{ productoExistente?.precio | currency:'MXN' }}
+        </div>
+        <div class="info-item">
+          <strong>Stock actual:</strong> {{ productoExistente?.stock_actual }} unidades
+        </div>
+        <div class="info-item">
+          <strong>Tipo de unidad:</strong> {{ productoExistente?.unidad_medida }}
+        </div>
+        <div class="info-item">
+          <strong>Tipo de producto:</strong> {{ productoExistente?.tipo_producto }}
+        </div>
+      </div>
+
+      <div class="form-group">
+        <label for="cantidad">Cantidad recibida:</label>
+        <input
+          type="number"
+          id="cantidad"
+          [(ngModel)]="cantidad"
+          placeholder="Ej. 50"
+          min="1"
+          class="form-input"
+          [disabled]="cargando"
+        />
+      </div>
+
+      <div class="form-group">
+        <label for="fechaRecepcion">Fecha de recepción:</label>
+        <input
+          type="date"
+          id="fechaRecepcion"
+          [(ngModel)]="fechaRecepcion"
+          class="form-input"
+          [disabled]="cargando"
+        />
+      </div>
+
+      <div class="form-group">
+        <label for="observaciones">Observaciones (opcional):</label>
+        <textarea
+          id="observaciones"
+          [(ngModel)]="observaciones"
+          placeholder="Notas sobre la recepción..."
+          class="form-textarea"
+          [disabled]="cargando"
+        ></textarea>
+      </div>
+
+      <div class="form-actions">
+        <button
+          type="button"
+          class="btn btn-primary"
+          (click)="recibirProductoExistente()"
+          [disabled]="cargando"
+        >
+          {{ cargando ? 'Procesando...' : '📈 Recibir Producto' }}
+        </button>
+        <button
+          type="button"
+          class="btn btn-secondary"
+          (click)="cancelar()"
+          [disabled]="cargando"
+        >
+          ❌ Cancelar
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Formulario para producto nuevo con scroll -->
+  <div class="scroll-container" *ngIf="tipoFormulario === 'producto-nuevo'">
+    <div class="form-section">
+      <h2>🆕 Crear Producto Nuevo</h2>
+
+      <div class="form-group">
+        <label for="codigoNuevo">Código del producto:</label>
+        <input
+          type="text"
+          id="codigoNuevo"
+          [(ngModel)]="codigo"
+          placeholder="Ej. PRD001"
+          class="form-input"
+          (input)="validarCodigoEnTiempoReal()"
+          [disabled]="cargando"
+        />
+        
+        <!-- Mensaje de validación de código -->
+        <div class="codigo-validacion" *ngIf="mensajeCodigoValidacion">
+          <p [class.success]="mensajeCodigoValidacion.includes('✅')" 
+             [class.error]="mensajeCodigoValidacion.includes('❌')"
+             [class.warning]="mensajeCodigoValidacion.includes('💡')"
+             [class.info]="mensajeCodigoValidacion.includes('⏳')">
+            {{ mensajeCodigoValidacion }}
+          </p>
+          
+          <!-- Botón para usar código sugerido -->
+          <button 
+            type="button" 
+            class="btn-usar-sugerido" 
+            *ngIf="codigoSugerido"
+            (click)="usarCodigoSugerido()"
+          >
+            Usar {{ codigoSugerido }}
+          </button>
+        </div>
+      </div>
+
+      <div class="form-group">
+        <label for="nombreNuevo">Nombre del producto:</label>
+        <input
+          type="text"
+          id="nombreNuevo"
+          [(ngModel)]="nombre"
+          placeholder="Ej. Café Instantáneo Premium"
+          class="form-input"
+          [disabled]="cargando"
+        />
+      </div>
+
+      <div class="form-group">
+        <label for="precioNuevo">Precio:</label>
+        <input
+          type="number"
+          id="precioNuevo"
+          [(ngModel)]="precio"
+          placeholder="Ej. 25.50"
+          min="0"
+          step="0.01"
+          class="form-input"
+          [disabled]="cargando"
+        />
+      </div>
+
+      <div class="form-group">
+        <label for="tipoUnidad">Tipo de unidad:</label>
+        <select
+          id="tipoUnidad"
+          [(ngModel)]="unidadMedida"
+          class="form-select"
+          [disabled]="cargando"
+        >
+          <option value="">Seleccionar tipo de unidad</option>
+          <option *ngFor="let unidad of tiposUnidad" [value]="unidad">{{ unidad }}</option>
+        </select>
+      </div>
+
+      <div class="form-group">
+        <label for="tipoProducto">Tipo de producto:</label>
+        <select
+          id="tipoProducto"
+          [(ngModel)]="tipoProducto"
+          class="form-select"
+          [disabled]="cargando"
+        >
+          <option value="">Seleccionar tipo de producto</option>
+          <option *ngFor="let tipo of tiposProducto" [value]="tipo">{{ tipo }}</option>
+        </select>
+      </div>
+
+      <div class="form-group">
+        <label for="cantidadNueva">Cantidad inicial:</label>
+        <input
+          type="number"
+          id="cantidadNueva"
+          [(ngModel)]="cantidad"
+          placeholder="Ej. 100"
+          min="1"
+          class="form-input"
+          [disabled]="cargando"
+        />
+      </div>
+
+      <div class="form-group">
+        <label for="stockMinimoNuevo">Stock mínimo:</label>
+        <input
+          type="number"
+          id="stockMinimoNuevo"
+          [(ngModel)]="stockMinimo"
+          placeholder="Ej. 10"
+          min="1"
+          class="form-input"
+          [disabled]="cargando"
+        />
+      </div>
+
+      <div class="form-group">
+        <label for="fechaRecepcionNuevo">Fecha de recepción:</label>
+        <input
+          type="date"
+          id="fechaRecepcionNuevo"
+          [(ngModel)]="fechaRecepcion"
+          class="form-input"
+          [disabled]="cargando"
+        />
+      </div>
+
+      <div class="form-group">
+        <label for="observacionesNuevo">Observaciones (opcional):</label>
+        <textarea
+          id="observacionesNuevo"
+          [(ngModel)]="observaciones"
+          placeholder="Notas sobre el producto..."
+          class="form-textarea"
+          [disabled]="cargando"
+        ></textarea>
+      </div>
+
+      <div class="form-actions">
+        <button
+          type="button"
+          class="btn btn-primary"
+          (click)="crearProductoNuevo()"
+          [disabled]="cargando"
+        >
+          {{ cargando ? 'Creando...' : '🆕 Crear Producto' }}
+        </button>
+        <button
+          type="button"
+          class="btn btn-secondary"
+          (click)="cancelar()"
+          [disabled]="cargando"
+        >
+          ❌ Cancelar
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Botón para mostrar historial -->
+  <div class="historial-controls">
+    <button
+      type="button"
+      class="btn btn-info"
+      (click)="mostrarHistorialCompleto()"
+    >
+      📋 Ver Historial Completo
+    </button>
+  </div>
+
+  <button class="back-link" (click)="volver()">← Volver al Panel</button>
+</div>

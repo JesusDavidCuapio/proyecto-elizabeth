@@ -1,0 +1,12 @@
+<div class="logo-text">🛍️ Tienda Elizabeth</div>
+<div class="container">
+  <h1>Panel de Cajero</h1>
+  <p>Bienvenido al panel de acciones para el puesto de Cajero. Selecciona la acción que deseas realizar:</p>
+  
+  <div class="actions">
+    <button class="btn" (click)="registrarVenta.emit()">Registrar Venta</button>
+    <button class="btn" (click)="consultarInventario.emit()">Consultar Inventario</button>
+  </div>
+
+  <button class="btn" (click)="volver()">Cerrar sesión</button>
+</div>

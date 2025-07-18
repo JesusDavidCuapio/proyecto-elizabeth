@@ -1,0 +1,141 @@
+<div class="container">
+  <h1>🧾 Ventas Registradas</h1>
+
+  <!-- Indicador de carga -->
+  <div *ngIf="cargando" class="cargando">
+    🔄 Cargando ventas...
+  </div>
+
+  <!-- Filtros en barra horizontal -->
+  <div class="filtros-container" *ngIf="!cargando && ventasRegistradas.length > 0">
+    <h2>🔍 Filtros Administrativos</h2>
+    
+    <div class="filtros-barra">
+      <!-- Rango de fechas -->
+      <div class="filtro-grupo">
+        <label for="fechaInicio">📅 Fecha inicio:</label>
+        <input 
+          type="date" 
+          id="fechaInicio" 
+          [(ngModel)]="fechaInicio" 
+          (change)="filtrarVentas()"
+        />
+      </div>
+
+      <div class="filtro-grupo">
+        <label for="fechaFin">📅 Fecha fin:</label>
+        <input 
+          type="date" 
+          id="fechaFin" 
+          [(ngModel)]="fechaFin" 
+          (change)="filtrarVentas()"
+        />
+      </div>
+
+      <!-- Filtro por empleado -->
+      <div class="filtro-grupo">
+        <label for="filtroEmpleado">👤 Empleado:</label>
+        <select id="filtroEmpleado" [(ngModel)]="filtroEmpleado" (change)="filtrarVentas()">
+          <option value="">Todos los empleados</option>
+          <option *ngFor="let empleado of empleadosDisponibles" [value]="empleado.nombre">
+            {{ empleado.nombre }}
+          </option>
+        </select>
+      </div>
+
+      <!-- Filtro por turno -->
+      <div class="filtro-grupo">
+        <label for="filtroTurno">🕒 Turno:</label>
+        <select id="filtroTurno" [(ngModel)]="filtroTurno" (change)="filtrarVentas()">
+          <option value="">Todos los turnos</option>
+          <option *ngFor="let turno of opcionesTurno" [value]="turno.valor">
+            {{ turno.etiqueta }}
+          </option>
+        </select>
+      </div>
+
+      <!-- Filtro por tipo de venta -->
+      <div class="filtro-grupo">
+        <label for="filtroTipoVenta">📊 Tipo de Venta:</label>
+        <select id="filtroTipoVenta" [(ngModel)]="filtroTipoVenta" (change)="filtrarVentas()">
+          <option value="">Todas las categorías</option>
+          <option *ngFor="let tipo of opcionesTipoVenta" [value]="tipo.valor">
+            {{ tipo.etiqueta }}
+          </option>
+        </select>
+      </div>
+
+      <!-- Botón limpiar -->
+      <div class="filtro-grupo">
+        <button type="button" class="btn-limpiar" (click)="limpiarFiltros()">
+          🗑️ Limpiar filtros
+        </button>
+      </div>
+    </div>
+
+    <!-- Información de resultados y estadísticas CORREGIDAS -->
+    <div class="filtros-info">
+      <div class="info-basica">
+        Mostrando <strong>{{ ventasFiltradas.length }}</strong> de <strong>{{ ventasRegistradas.length }}</strong> ventas
+      </div>
+      
+      <div class="estadisticas" *ngIf="ventasFiltradas.length > 0">
+        <div class="stat-item">
+          <span class="stat-label">Venta mínima:</span>
+          <span class="stat-value">{{ calcularVentaMinima() | currency:'MXN' }}</span>
+        </div>
+        <div class="stat-item">
+          <span class="stat-label">Venta máxima:</span>
+          <span class="stat-value">{{ calcularVentaMaxima() | currency:'MXN' }}</span>
+        </div>
+      </div>
+    </div>
+
+  <!-- Tabla con scroll optimizado -->
+  <div class="table-scroll-container" *ngIf="!cargando && ventasRegistradas.length > 0">
+    <table class="ventas-table">
+      <thead>
+        <tr>
+          <th>ID Venta</th>
+          <th>Fecha</th>
+          <th>Empleado</th>
+          <th>Productos</th>
+          <th>Tipos de Producto</th>
+          <th>Total</th>
+          <th>Pago Cliente</th>
+          <th>Cambio</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr *ngFor="let venta of ventasFiltradas; trackBy: trackByFn">
+          <td><strong>{{ venta.id_venta }}</strong></td>
+          <td>{{ venta.fecha_venta | date:'dd/MM/yyyy HH:mm' }}</td>
+          <td>{{ venta.empleado_nombre }}</td>
+          <td class="productos-cell">
+            <span class="productos-lista">{{ venta.productos }}</span>
+          </td>
+          <td>
+            <span class="tipo-badge" *ngFor="let tipo of venta.tipos_producto?.split(', ') || []">
+              {{ tipo }}
+            </span>
+          </td>
+          <td class="total-cell">{{ venta.total | currency:'MXN' }}</td>
+          <td class="pago-cell">{{ venta.pago_cliente | currency:'MXN' }}</td>
+          <td class="cambio-cell">{{ venta.cambio | currency:'MXN' }}</td>
+        </tr>
+        <tr *ngIf="ventasFiltradas.length === 0 && ventasRegistradas.length > 0">
+          <td colspan="8" style="text-align:center; color: #888; padding: 20px;">
+            ❌ No se encontraron ventas con los filtros aplicados
+          </td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <!-- Sin ventas -->
+  <div class="sin-resultados" *ngIf="!cargando && ventasRegistradas.length === 0">
+    📋 No hay ventas registradas
+  </div>
+
+  <button class="back-link" (click)="volver()">← Volver a Reportes</button>
+</div>

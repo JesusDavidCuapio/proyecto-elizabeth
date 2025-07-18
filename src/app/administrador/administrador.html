@@ -1,0 +1,16 @@
+<h1>Panel de Administrador👥📊📦</h1>
+<p>Bienvenido al panel de control del Administrador. Selecciona una acción:</p>
+
+<div class="panel">
+  <button class="action-btn" (click)="onGestionarEmpleados()">👥 Gestionar Empleados</button>
+  <button class="action-btn" (click)="onVerReportes()">📊 Ver Reportes</button>
+  <button class="action-btn" (click)="onAdministrarInventario()">📦 Administrar Inventario</button>
+</div>
+
+<button class="logout-link" (click)="cerrarSesion()">← Cerrar sesión</button>
+
+
+<app-gestionar-empleados
+  *ngIf="mostrarGestionarEmpleados"
+  (volverEvent)="volver()"
+></app-gestionar-empleados>

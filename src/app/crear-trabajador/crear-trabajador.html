@@ -1,0 +1,114 @@
+<div class="form-container">
+  <form #empleadoForm="ngForm" (ngSubmit)="onSubmit(empleadoForm)">
+    <h2>👤 Crear Perfil de Empleado</h2>
+    
+    <!-- Mensaje de estado -->
+    <div *ngIf="mensaje" class="mensaje" [class.success]="mensaje.includes('✅')" [class.error]="mensaje.includes('❌')">
+      {{ mensaje }}
+    </div>
+
+    <label for="ID_empleado">ID del empleado</label>
+    <input 
+  type="text" 
+  id="ID_empleado" 
+  name="ID_empleado" 
+  [(ngModel)]="empleado.id_empleado"
+  required 
+  placeholder="Ej: EMP001"
+  #idEmpleado="ngModel"
+  pattern="EMP[0-9]{3}"
+/>
+<div *ngIf="idEmpleado.invalid && idEmpleado.touched" class="error">
+  <span *ngIf="idEmpleado.errors?.['required']">ID del empleado es requerido</span>
+  <span *ngIf="idEmpleado.errors?.['pattern']">Formato inválido. Ejemplo: EMP001</span>
+</div>
+
+    <label for="nombre">Nombre completo</label>
+    <input 
+  type="text" 
+  id="nombre" 
+  name="nombre" 
+  [(ngModel)]="empleado.nombre_completo"
+  required 
+  placeholder="Ej: Juan Pérez González"
+  #nombre="ngModel"
+  pattern="^[A-Za-zÁÉÍÓÚáéíóúÑñ ]+$"
+/>
+<div *ngIf="nombre.invalid && nombre.touched" class="error">
+  <span *ngIf="nombre.errors?.['required']">Nombre completo es requerido</span>
+  <span *ngIf="nombre.errors?.['pattern']">Solo letras y espacios permitidos</span>
+</div>
+
+    <label for="usuario">Nombre de usuario</label>
+    <input 
+      type="text" 
+      id="usuario" 
+      name="usuario" 
+      [(ngModel)]="empleado.usuario"
+      required 
+      placeholder="Ej: jperez"
+      #usuario="ngModel"
+    />
+    <div *ngIf="usuario.invalid && usuario.touched" class="error">
+      Usuario es requerido
+    </div>
+
+    <label for="contrasena">Contraseña</label>
+    <input 
+      type="password" 
+      id="contrasena" 
+      name="contrasena" 
+      [(ngModel)]="empleado.contrasena"
+      required 
+      placeholder="Mínimo 6 caracteres"
+      #contrasena="ngModel"
+    />
+    <div *ngIf="contrasena.invalid && contrasena.touched" class="error">
+      Contraseña es requerida
+    </div>
+
+    <label for="telefono">Teléfono</label>
+    <input 
+  type="tel" 
+  id="telefono" 
+  name="telefono" 
+  [(ngModel)]="empleado.telefono"
+  required 
+  placeholder="Ej: 5551234567"
+  #telefono="ngModel"
+  pattern="^[0-9]+$"
+/>
+<div *ngIf="telefono.invalid && telefono.touched" class="error">
+  <span *ngIf="telefono.errors?.['required']">Teléfono es requerido</span>
+  <span *ngIf="telefono.errors?.['pattern']">Solo números permitidos</span>
+</div>
+
+    <label for="cargo">Cargo del empleado</label>
+    <select 
+      id="cargo" 
+      name="cargo" 
+      [(ngModel)]="empleado.cargo"
+      required
+      #cargo="ngModel"
+    >
+      <option value="" disabled>Seleccione un cargo</option>
+      <option value="cajero">Cajero</option>
+      <option value="auxiliar">Auxiliar de tienda</option>
+      <option value="almacenista">Almacenista</option>
+      <option value="administrador">Administrador</option>
+    </select>
+    <div *ngIf="cargo.invalid && cargo.touched" class="error">
+      Cargo es requerido
+    </div>
+
+    <button 
+      type="submit" 
+      class="btn" 
+      [disabled]="empleadoForm.invalid || cargando"
+    >
+      {{ cargando ? 'Creando...' : 'Crear Perfil' }}
+    </button>
+    
+    <button type="button" class="btn" (click)="volver()">← Volver</button>
+  </form>
+</div>

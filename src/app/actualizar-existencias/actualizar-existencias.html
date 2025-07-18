@@ -1,0 +1,203 @@
+<div class="scroll-wrapper">
+  <div class="container">
+    <h1>🔄 Actualizar Existencias en stock</h1>
+
+  <!-- Mensaje de estado -->
+    <div *ngIf="mensaje" class="mensaje" [class.success]="mensaje.includes('✅')" [class.error]="mensaje.includes('❌')">
+      {{ mensaje }}
+    </div>
+
+    <!-- Contenedor principal con layout horizontal -->
+  <div class="main-layout">
+    
+    <!-- Columna izquierda: Seleccionar producto -->
+    <div class="left-column">
+      <div class="form-section">
+        <h2>🔍 Seleccionar Producto</h2>
+        
+        <div class="form-group">
+          <label for="busqueda">Buscar producto por código o nombre:</label>
+          <div class="instrucciones">
+            💡 Escribe al menos 2 caracteres para buscar el producto que deseas actualizar.
+          </div>
+          <div class="search-container">
+            <input
+              type="text"
+              id="busqueda"
+              [(ngModel)]="terminoBusqueda"
+              placeholder="Ej. PRD001 o Manzana"
+              class="form-input"
+              (input)="buscarProductos()"
+              (blur)="ocultarSugerencias()"
+              autocomplete="off"
+            />
+            
+            <!-- Lista de sugerencias -->
+            <div class="sugerencias-container" *ngIf="mostrarSugerencias && productosSugeridos.length > 0">
+              <div 
+                *ngFor="let producto of productosSugeridos" 
+                class="sugerencia-item"
+                (click)="seleccionarProducto(producto)"
+              >
+                <div class="sugerencia-principal">
+                  <strong>{{ producto.codigo }}</strong> - {{ producto.nombre }}
+                </div>
+                <div class="sugerencia-detalles">
+                  <span>Stock actual: {{ producto.stock_actual }}</span>
+                  <span>Precio: {{ producto.precio | currency:'MXN' }}</span>
+                  <span class="estado-badge" [class.bajo]="producto.estado_stock === 'Bajo stock'">
+                    {{ producto.estado_stock }}
+                  </span>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Información del producto seleccionado -->
+        <div class="producto-seleccionado" *ngIf="productoSeleccionado">
+  <h3>✅ Producto Seleccionado</h3>
+  <div class="producto-info">
+    <div class="info-item">
+      <strong>Código:</strong> {{ productoSeleccionado.codigo }}
+    </div>
+    <div class="info-item">
+      <strong>Nombre:</strong> {{ productoSeleccionado.nombre }}
+    </div>
+    <div class="info-item">
+      <strong>Stock actual en almacén:</strong> {{ productoSeleccionado.stock_actual }} unidades
+    </div>
+    <div class="info-item">
+      <strong>Stock mínimo:</strong> {{ productoSeleccionado.stock_minimo }} unidades
+    </div>
+    <div class="info-item">
+      <strong>Tipo de unidad:</strong> {{ productoSeleccionado.unidad_medida }}
+    </div>
+    <div class="info-item">
+      <strong>Tipo de producto:</strong> {{ productoSeleccionado.tipo_producto }}
+    </div>
+    <div class="info-item">
+      <strong>Precio:</strong> {{ productoSeleccionado.precio | currency:'MXN' }}
+    </div>
+    <div class="info-item" [class.bajo-stock]="productoSeleccionado.stock_actual <= productoSeleccionado.stock_minimo">
+      <strong>Estado:</strong> {{ productoSeleccionado.estado_stock }}
+    </div>
+  </div>
+</div>
+
+    <!-- Columna derecha: Configurar ajuste -->
+    <div class="right-column">
+      <div class="form-section ajuste-form" *ngIf="productoSeleccionado">
+        <h2>⚙️ Configurar Ajuste</h2>
+        
+        <div class="form-group">
+          <label for="tipoAjuste">Tipo de ajuste:</label>
+          <select id="tipoAjuste" [(ngModel)]="tipoAjuste" class="form-select">
+            <option value="aumentar">➕ Aumentar stock</option>
+            <option value="reducir">➖ Reducir stock</option>
+            <option value="establecer">🎯 Establecer stock exacto</option>
+          </select>
+        </div>
+
+        <div class="form-group">
+          <label for="cantidad">
+            <span *ngIf="tipoAjuste === 'aumentar'">Cantidad a aumentar:</span>
+            <span *ngIf="tipoAjuste === 'reducir'">Cantidad a reducir:</span>
+            <span *ngIf="tipoAjuste === 'establecer'">Nuevo stock total:</span>
+          </label>
+          <input
+            type="number"
+            id="cantidad"
+            [(ngModel)]="cantidad"
+            [placeholder]="tipoAjuste === 'establecer' ? 'Ej. 100' : 'Ej. 25'"
+            min="0"
+            class="form-input"
+            [disabled]="cargando"
+          />
+        </div>
+
+        <div class="form-group">
+          <label for="motivo">Motivo del ajuste:</label>
+          <input
+            type="text"
+            id="motivo"
+            [(ngModel)]="motivo"
+            placeholder="Describe el motivo del ajuste (ej. Ajuste por conteo físico, Producto dañado, etc.)"
+            class="form-input"
+            [disabled]="cargando"
+            maxlength="100"
+          />
+        </div>
+
+        <div class="form-group">
+          <label for="observaciones">Observaciones adicionales (opcional):</label>
+          <textarea
+            id="observaciones"
+            [(ngModel)]="observaciones"
+            placeholder="Detalles adicionales del ajuste..."
+            class="form-textarea"
+            [disabled]="cargando"
+          ></textarea>
+        </div>
+
+        <!-- Preview del cambio -->
+        <div class="preview-cambio" *ngIf="cantidad && cantidad > 0">
+          <h4>📊 Preview del Cambio</h4>
+          <div class="cambio-info">
+            <div class="stock-antes">
+              <span>Stock actual</span>
+              <strong>{{ productoSeleccionado.stock_actual }}</strong>
+            </div>
+            <div class="flecha">→</div>
+            <div class="stock-despues">
+              <span>Stock después</span>
+              <strong>{{ calcularNuevoStock() }}</strong>
+            </div>
+            <div class="flecha">=</div>
+            <div class="diferencia">
+              <span>Diferencia</span>
+              <strong [class.positivo]="calcularNuevoStock() > productoSeleccionado.stock_actual" 
+                      [class.negativo]="calcularNuevoStock() < productoSeleccionado.stock_actual">
+                {{ calcularNuevoStock() - productoSeleccionado.stock_actual > 0 ? '+' : '' }}{{ calcularNuevoStock() - productoSeleccionado.stock_actual }}
+              </strong>
+            </div>
+          </div>
+        </div>
+
+        <div class="form-actions">
+          <button
+            type="button"
+            class="btn btn-primary"
+            (click)="actualizarExistencias()"
+            [disabled]="cargando"
+          >
+            {{ cargando ? 'Actualizando...' : '🔄 Actualizar Existencias' }}
+          </button>
+          <button
+            type="button"
+            class="btn btn-secondary"
+            (click)="cancelar()"
+            [disabled]="cargando"
+          >
+            ❌ Cancelar
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Botón para mostrar historial -->
+  <div class="historial-controls">
+    <button
+      type="button"
+      class="btn btn-info"
+      (click)="alternarHistorial()"
+    >
+      📋 Ver Historial Completo
+    </button>
+  </div>
+
+
+  <!-- Botón volver -->
+  <button class="back-link" (click)="volver()">← Volver al Panel</button>
+</div>

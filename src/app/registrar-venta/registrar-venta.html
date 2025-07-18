@@ -1,0 +1,212 @@
+<div class="container">
+  <!-- Botón volver en esquina superior izquierda -->
+  <button class="back-btn-corner" (click)="volver()">← Volver</button>
+  
+  <!-- Título centrado -->
+  <h1>🧾 Registrar Venta</h1>
+
+  <!-- Mensaje de estado -->
+  <div *ngIf="mensaje" class="mensaje" [class.error]="mensaje.includes('❌')" [class.success]="mensaje.includes('✅')">
+    {{ mensaje }}
+  </div>
+
+  <!-- Indicador de carga -->
+  <div *ngIf="cargando" class="cargando">
+    🔄 Cargando productos...
+  </div>
+
+  <!-- Buscador de productos -->
+  <div class="search-container" *ngIf="!cargando">
+    <label for="buscador">Buscar producto:</label>
+    <input
+      id="buscador"
+      type="text"
+      [(ngModel)]="busqueda"
+      (input)="buscarProductos()"
+      placeholder="Escribe nombre o código del producto..."
+      autocomplete="off"
+    />
+  </div>
+
+  <!-- Contenedor principal de productos y carrito - SIEMPRE VISIBLE -->
+  <div class="main-content" *ngIf="!cargando">
+    
+    <!-- Lista de productos disponibles -->
+    <div class="productos-container">
+      <h3>📦 Productos disponibles</h3>
+      <div class="productos-grid" *ngIf="productosDisponibles.length > 0">
+        <div 
+          *ngFor="let producto of productosDisponibles" 
+          class="producto-card"
+          (click)="agregarAlCarrito(producto)"
+          [class.sin-stock]="producto.cantidad <= 0"
+        >
+          <div class="producto-info">
+            <strong>{{ producto.nombre }}</strong>
+            <div class="producto-detalles">
+              <span><strong>Código:</strong> {{ producto.codigo }}</span>
+              <span><strong>Stock:</strong> {{ producto.cantidad }}</span>
+              <span><strong>Precio:</strong> {{ producto.precio | currency:'MXN' }}</span>
+              <span><strong>Tipo de unidad:</strong> <span class="badge-unidad">{{ producto.unidad_medida }}</span></span>
+              <span><strong>Tipo de producto:</strong> <span class="badge-tipo">{{ producto.tipo_producto }}</span></span>
+            </div>
+          </div>
+          <button class="btn-agregar" [disabled]="producto.cantidad <= 0">
+            {{ producto.cantidad > 0 ? 'Agregar' : 'Sin stock' }}
+          </button>
+        </div>
+      </div>
+      <div *ngIf="busqueda.length > 0 && productosDisponibles.length === 0" class="sin-resultados">
+        📭 No se encontraron productos que coincidan con la búsqueda
+      </div>
+    </div>
+
+    <!-- Carrito de compras ESTILO TABLA -->
+    <div class="carrito-container">
+      <h3>🛒 Carrito de compras ({{ carrito.length }} productos)</h3>
+      
+      <!-- Tabla del carrito -->
+      <div class="carrito-table-container" *ngIf="carrito.length > 0">
+        <table class="carrito-table">
+          <thead>
+            <tr>
+              <th>Código</th>
+              <th>Nombre</th>
+              <th>Tipo de producto</th>
+              <th>Precio</th>
+              <th>Cantidad</th>
+              <th>Unidad</th>
+              <th>Total de solo este producto</th>
+              <th>Eliminar</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr *ngFor="let item of carrito; let i = index; trackBy: trackByFn">
+              <td>
+                <span class="producto-codigo">{{ item.codigo }}</span>
+              </td>
+              <td>
+                <div class="producto-nombre">{{ item.nombre }}</div>
+                <span class="producto-tipo">{{ item.tipo_producto }}</span>
+              </td>
+              <td>
+                <span class="producto-tipo">{{ item.tipo_producto }}</span>
+              </td>
+              <td class="precio-unitario">
+                {{ item.precio | currency:'MXN' }}
+              </td>
+              <td class="cantidad-cell">
+                <div class="cantidad-controls-table">
+                  <button 
+                    class="btn-cantidad-table" 
+                    (click)="actualizarCantidad(item, item.cantidad - 1)"
+                    [disabled]="item.cantidad <= 1"
+                  >-</button>
+                  <input 
+                    type="number" 
+                    min="1" 
+                    [max]="item.stockDisponible"
+                    [(ngModel)]="item.cantidad"
+                    (change)="actualizarCantidad(item, item.cantidad)"
+                    class="cantidad-input-table"
+                  />
+                  <button 
+                    class="btn-cantidad-table" 
+                    (click)="actualizarCantidad(item, item.cantidad + 1)" 
+                    [disabled]="item.cantidad >= item.stockDisponible"
+                  >+</button>
+                </div>
+                <div class="unidad-medida-table">{{ item.unidad_medida }}</div>
+                <div class="stock-info-table">Max: {{ item.stockDisponible }}</div>
+              </td>
+              <td>
+                <span class="unidad-medida-table">{{ item.unidad_medida }}</span>
+              </td>
+              <td class="subtotal-cell">
+                {{ (item.precio * item.cantidad) | currency:'MXN' }}
+              </td>
+              <td class="eliminar-cell">
+                <button class="btn-eliminar-table" (click)="eliminarDelCarrito(i)" title="Eliminar producto">
+                  🗑️
+                </button>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <!-- Carrito vacío -->
+      <div *ngIf="carrito.length === 0" class="carrito-vacio">
+        🛒 Carrito vacío<br>
+        <small>Busca y selecciona productos para agregar</small>
+      </div>
+    </div>
+
+    <!-- Total y finalizar venta -->
+    <div class="total-container" *ngIf="carrito.length > 0 && !mostrandoPago">
+      <div class="total-info">
+        <h3>Total: {{ total | currency:'MXN' }}</h3>
+        <p>{{ carrito.length }} producto{{ carrito.length > 1 ? 's' : '' }}</p>
+      </div>
+      <button 
+        class="btn-finalizar" 
+        (click)="mostrarPanelPago()"
+        [disabled]="carrito.length === 0"
+      >
+        💰 Procesar Pago
+      </button>
+    </div>
+
+    <!-- Panel de pago -->
+    <div class="pago-container" *ngIf="mostrandoPago">
+      <h4>💰 Procesar Pago</h4>
+      
+      <div class="pago-info">
+        <div class="pago-row">
+          <span><strong>Total a cobrar:</strong></span>
+          <span class="total-amount">{{ total | currency:'MXN' }}</span>
+        </div>
+        
+        <div class="pago-row">
+          <label for="pagoCliente"><strong>Pago del cliente:</strong></label>
+          <input 
+            id="pagoCliente"
+            type="number" 
+            [(ngModel)]="pagoCliente" 
+            (input)="calcularCambio()"
+            placeholder="0.00"
+            min="0"
+            step="0.01"
+            class="pago-input"
+          />
+        </div>
+        
+        <div class="pago-row" *ngIf="pagoCliente && pagoCliente >= total">
+          <span><strong>Cambio:</strong></span>
+          <span class="cambio-amount">{{ cambio | currency:'MXN' }}</span>
+        </div>
+        
+        <div class="pago-error" *ngIf="pagoCliente && pagoCliente < total">
+          ❌ El pago debe ser mayor o igual al total
+        </div>
+      </div>
+      
+      <div class="pago-actions">
+        <button 
+          class="btn-confirmar-pago" 
+          (click)="procesarVenta()"
+          [disabled]="!pagoCliente || pagoCliente < total || procesandoVenta"
+        >
+          {{ procesandoVenta ? 'Procesando...' : '✅ Confirmar Venta' }}
+        </button>
+        <button 
+          class="btn-cancelar-pago" 
+          (click)="cancelarPago()"
+          [disabled]="procesandoVenta"
+        >
+          ❌ Cancelar
+        </button>
+      </div>
+    </div>
+  </div>
+</div>

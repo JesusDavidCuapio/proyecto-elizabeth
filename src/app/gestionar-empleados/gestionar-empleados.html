@@ -1,0 +1,200 @@
+<div class="container">
+  <h1>👥 Gestionar Empleados</h1>
+
+  <!-- Mensaje de estado -->
+  <div *ngIf="mensaje" class="mensaje" [class.success]="mensaje.includes('✅')" [class.error]="mensaje.includes('❌')">
+    {{ mensaje }}
+  </div>
+
+  <!-- Controles superiores -->
+  <div class="controls">
+    <button class="btn btn-primary" (click)="agregarEmpleadoClick()">
+      ➕ Agregar Empleado
+    </button>
+  </div>
+
+  <!-- Barra de búsqueda y filtros -->
+  <div class="filters">
+    <div class="search-container">
+      <input 
+        type="text" 
+        [(ngModel)]="terminoBusqueda" 
+        (input)="buscarEmpleados()" 
+        placeholder="Buscar por nombre o usuario..." 
+        class="search-input"
+      />
+    </div>
+    
+    <div class="cargo-filters">
+      <button 
+        *ngFor="let cargo of ['Todos', 'Cajero', 'Auxiliar', 'Almacenista', 'Administrador']" 
+        class="filter-btn" 
+        [class.active]="filtroCargoActual === cargo"
+        (click)="filtrarPorCargo(cargo)"
+      >
+        {{ cargo }}
+      </button>
+    </div>
+  </div>
+
+  <!-- Indicador de carga -->
+  <div *ngIf="cargando" class="loading">
+    🔄 Cargando empleados...
+  </div>
+
+  <!-- Contador de empleados -->
+  <div class="empleados-count" *ngIf="!cargando">
+    <span>{{ empleadosFiltrados.length }} empleado(s) encontrado(s)</span>
+  </div>
+
+  <!-- Tabla de empleados con scroll -->
+  <div class="table-scroll-indicator" *ngIf="!cargando">
+    <div class="table-container">
+      <table class="empleados-table">
+        <thead>
+          <tr>
+            <th>ID</th>
+            <th>Nombre Completo</th>
+            <th>Usuario</th>
+            <th>Teléfono</th>
+            <th>Cargo</th>
+            <th>Fecha Creación</th>
+            <th>Estado</th>
+            <th>Acciones</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr *ngFor="let empleado of empleadosFiltrados; let i = index">
+            <td>{{ empleado.id_empleado }}</td>
+            <td>{{ empleado.nombre_completo }}</td>
+            <td>{{ empleado.usuario }}</td>
+            <td>{{ empleado.telefono }}</td>
+            <td>
+              <span class="cargo-badge" [class]="'cargo-' + empleado.cargo.toLowerCase()">
+                {{ empleado.cargo }}
+              </span>
+            </td>
+            <td>{{ empleado.fecha_creacion | date:'dd/MM/yyyy' }}</td>
+            <td>
+              <span class="estado-badge activo">
+                Activo
+              </span>
+            </td>
+            <td class="actions">
+              <button class="btn-action btn-edit" (click)="editarEmpleado(empleado)">
+                ✏️ Editar
+              </button>
+              <button class="btn-action btn-delete" (click)="eliminarEmpleado(empleado)">
+                🗑️ Eliminar
+              </button>
+            </td>
+          </tr>
+          <tr *ngIf="empleadosFiltrados.length === 0">
+            <td colspan="8" class="no-data">
+              {{ terminoBusqueda ? 'No se encontraron empleados con el término: "' + terminoBusqueda + '"' : 'No hay empleados registrados' }}
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <!-- Modal de edición -->
+  <div class="modal-overlay" *ngIf="mostrarModalEditar" (click)="cancelarEdicion()">
+    <div class="modal-content" (click)="$event.stopPropagation()">
+      <h2>✏️ Editar Empleado</h2>
+      
+      <form #editarForm="ngForm" (ngSubmit)="guardarCambios()">
+        <div class="form-group">
+          <label>ID Empleado:</label>
+          <input type="text" [value]="empleadoEditar.id_empleado" readonly class="readonly-input" />
+        </div>
+        
+        <div class="form-group">
+  <label>Nombre Completo:</label>
+  <input 
+    type="text" 
+    [(ngModel)]="empleadoEditar.nombre_completo" 
+    name="nombre"
+    required
+    class="form-input"
+    #nombreEditar="ngModel"
+    pattern="^[A-Za-zÁÉÍÓÚáéíóúÑñ ]+$"
+  />
+  <div *ngIf="nombreEditar.invalid && nombreEditar.touched" class="error">
+    <span *ngIf="nombreEditar.errors?.['required']">Nombre completo es requerido</span>
+    <span *ngIf="nombreEditar.errors?.['pattern']">Solo letras y espacios permitidos</span>
+  </div>
+</div>
+        
+        <div class="form-group">
+          <label>Usuario:</label>
+          <input 
+            type="text" 
+            [(ngModel)]="empleadoEditar.usuario" 
+            name="usuario"
+            required
+            class="form-input"
+          />
+        </div>
+        
+        <div class="form-group">
+  <label>Teléfono:</label>
+  <input 
+    type="tel" 
+    [(ngModel)]="empleadoEditar.telefono" 
+    name="telefono"
+    required
+    class="form-input"
+    #telefonoEditar="ngModel"
+    pattern="^[0-9]+$"
+  />
+  <div *ngIf="telefonoEditar.invalid && telefonoEditar.touched" class="error">
+    <span *ngIf="telefonoEditar.errors?.['required']">Teléfono es requerido</span>
+    <span *ngIf="telefonoEditar.errors?.['pattern']">Solo números permitidos</span>
+  </div>
+</div>
+        
+        <div class="form-group">
+          <label>Cargo:</label>
+          <select [(ngModel)]="empleadoEditar.cargo" name="cargo" required class="form-select">
+            <option *ngFor="let cargo of cargosDisponibles" [value]="cargo">{{ cargo }}</option>
+          </select>
+        </div>
+        
+        <div class="modal-actions">
+          <button type="submit" class="btn btn-primary" [disabled]="cargando || !editarForm.valid">
+            {{ cargando ? 'Guardando...' : '💾 Guardar Cambios' }}
+          </button>
+          <button type="button" class="btn btn-secondary" (click)="cancelarEdicion()">
+            ❌ Cancelar
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- Modal de confirmación de eliminación -->
+  <div class="modal-overlay" *ngIf="mostrarConfirmacion" (click)="cancelarEliminacion()">
+    <div class="modal-confirmacion" (click)="$event.stopPropagation()">
+      <div class="icono-confirmacion">
+        🗑️
+      </div>
+      <h3>¿Estás seguro?</h3>
+      <p>¿Deseas eliminar permanentemente al empleado <strong>"{{ empleadoAEliminar?.nombre_completo }}"</strong>?</p>
+      <p class="advertencia">Esta acción no se puede deshacer.</p>
+      
+      <div class="botones-confirmacion">
+        <button class="btn-confirmar" (click)="confirmarEliminacion()" [disabled]="cargando">
+          {{ cargando ? 'Eliminando...' : '✅ Sí, eliminar' }}
+        </button>
+        <button class="btn-cancelar" (click)="cancelarEliminacion()" [disabled]="cargando">
+          ❌ Cancelar
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Botón volver -->
+  <button class="back-link" (click)="volver()">← Volver al Panel</button>
+</div>

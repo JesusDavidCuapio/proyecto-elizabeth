@@ -1,0 +1,97 @@
+:root {
+  --primary-color: #264653;
+  --secondary-color: #2a9d8f;
+  --accent-color: #e9c46a;
+  --bg-gradient-start: #f4f1de;
+  --bg-gradient-end: #e9ecef;
+}
+
+body {
+  margin: 0;
+  font-family: 'Segoe UI', sans-serif;
+  background: linear-gradient(135deg, var(--bg-gradient-start), var(--bg-gradient-end));
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: flex-start;
+  padding: 60px 20px;
+}
+
+h1 {
+  font-size: 36px;
+  margin-bottom: 30px;
+  color: var(--primary-color);
+  background: linear-gradient(90deg, var(--primary-color), var(--secondary-color));
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+.card-container {
+  display: flex;
+  gap: 40px;
+  flex-wrap: wrap;
+  justify-content: center;
+}
+
+.card {
+  width: 300px;
+  padding: 25px;
+  background-color: #ffffffcc;
+  backdrop-filter: blur(6px);
+  border-radius: 15px;
+  box-shadow: 0 10px 25px rgba(0,0,0,0.15);
+  text-align: center;
+  transition: transform 0.3s ease;
+}
+
+.card:hover {
+  transform: scale(1.05);
+}
+
+.card h2 {
+  margin-bottom: 15px;
+  color: var(--primary-color);
+  font-size: 22px;
+}
+
+.card p {
+  font-size: 15px;
+  color: #555;
+  margin-bottom: 20px;
+}
+
+.btn {
+  display: inline-block;
+  padding: 10px 18px;
+  background-color: var(--secondary-color);
+  color: white;
+  border-radius: 10px;
+  text-decoration: none;
+  font-weight: bold;
+  border: none;
+  font-size: 16px;
+  transition: background-color 0.3s ease;
+  cursor: pointer;
+}
+
+.btn:hover {
+  background-color: var(--primary-color);
+}
+
+.back-link {
+  margin-top: 40px;
+  text-align: center;
+  color: var(--secondary-color);
+  font-weight: 600;
+  text-decoration: none;
+  font-size: 16px;
+  background: none;
+  border: none;
+  cursor: pointer;
+}
+
+.back-link:hover {
+  color: var(--primary-color);
+  text-decoration: underline;
+}
