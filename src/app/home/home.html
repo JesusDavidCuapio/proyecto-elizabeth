@@ -21,8 +21,16 @@
   <div class="container">
     <h1>👋 Acceso de Empleado</h1>
     <p>Selecciona una opción:</p>
-    <button class="btn" (click)="mostrarLogin()">Iniciar Sesión</button>
-    <button class="btn" (click)="mostrarCrear()">Crear Perfil</button>
+    <div class="buttons-container">
+      <button class="btn btn-left" (click)="mostrarLogin()">
+        <span class="btn-icon">🔑</span>
+        Iniciar Sesión
+      </button>
+      <button class="btn btn-right" (click)="mostrarCrear()">
+        <span class="btn-icon">👤</span>
+        Crear Perfil
+      </button>
+    </div>
   </div>
 </div>
 

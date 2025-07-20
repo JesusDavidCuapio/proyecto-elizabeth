@@ -721,7 +721,7 @@ table.carrito-table th,
   box-shadow: 0 12px 35px rgba(39, 174, 96, 0.4);
 }
 
-/* Panel de pago */
+/* =================== PANEL DE PAGO - VERSIÓN LIMPIA =================== */
 .pago-container {
   background: linear-gradient(135deg, #ffffff, #f8f9fa);
   border: 3px solid var(--success-color);
@@ -731,23 +731,33 @@ table.carrito-table th,
   order: 3;
 }
 
-/* 🔧 SOLUCIÓN DEFINITIVA: Título "Procesar Pago" - USANDO PATRÓN DE OTROS COMPONENTES */
-.pago-container h4,
-.pago-container > h4,
-div.pago-container h4,
-.main-content .pago-container h4 {
-  color: #ffffff !important;
+/* 🔧 TÍTULO "PROCESAR PAGO" - BOTÓN VERDE DEFINITIVO */
+.pago-container h4 {
+  color: #ffffff !important; /* Texto blanco */
+  background: linear-gradient(135deg, #27ae60, #2ecc71) !important; /* Verde gradiente */
   font-size: 1.4rem !important;
-  margin-bottom: 20px !important;
-  text-align: center !important;
-  background: #27ae60 !important;
-  padding: 15px !important;
+  font-weight: 700 !important;
   margin: -25px -25px 20px -25px !important;
+  padding: 15px !important;
+  text-align: center !important;
   border-radius: 12px 12px 0 0 !important;
+  border: 2px solid #27ae60 !important;
+  box-shadow: 0 2px 8px rgba(39, 174, 96, 0.3) !important;
   text-shadow: none !important;
   -webkit-text-fill-color: #ffffff !important;
 }
 
+/* Asegurar que NINGÚN elemento hijo interfiera */
+.pago-container h4 *,
+.pago-container h4 span,
+.pago-container h4::before,
+.pago-container h4::after {
+  color: #ffffff !important;
+  -webkit-text-fill-color: #ffffff !important;
+  text-shadow: none !important;
+}
+
+/* Información del pago */
 .pago-info {
   background: white;
   border-radius: 10px;
@@ -829,9 +839,10 @@ div.pago-container h4,
   margin-top: 25px;
 }
 
+/* Botones de pago */
 .btn-confirmar-pago {
   background: linear-gradient(135deg, #27ae60, #229954) !important;
-  color: white !important;
+  color: #ffffff !important;
   border: none;
   padding: 15px 30px;
   border-radius: 25px;
@@ -840,13 +851,15 @@ div.pago-container h4,
   cursor: pointer;
   transition: all 0.3s ease;
   box-shadow: 0 6px 20px rgba(39, 174, 96, 0.3);
+  -webkit-text-fill-color: #ffffff !important;
 }
 
 .btn-confirmar-pago:hover:not(:disabled) {
   background: linear-gradient(135deg, #2ecc71, #27ae60) !important;
-  color: white !important;
+  color: #ffffff !important;
   transform: translateY(-3px);
   box-shadow: 0 10px 30px rgba(39, 174, 96, 0.4);
+  -webkit-text-fill-color: #ffffff !important;
 }
 
 .btn-confirmar-pago:disabled {
@@ -857,7 +870,7 @@ div.pago-container h4,
 
 .btn-cancelar-pago {
   background: linear-gradient(135deg, #e74c3c, #c0392b) !important;
-  color: white !important;
+  color: #ffffff !important;
   border: none;
   padding: 15px 30px;
   border-radius: 25px;
@@ -866,49 +879,21 @@ div.pago-container h4,
   cursor: pointer;
   transition: all 0.3s ease;
   box-shadow: 0 6px 20px rgba(231, 76, 60, 0.3);
+  -webkit-text-fill-color: #ffffff !important;
 }
 
 .btn-cancelar-pago:hover:not(:disabled) {
   background: linear-gradient(135deg, #c0392b, #a93226) !important;
-  color: white !important;
+  color: #ffffff !important;
   transform: translateY(-3px);
   box-shadow: 0 10px 30px rgba(231, 76, 60, 0.4);
+  -webkit-text-fill-color: #ffffff !important;
 }
 
-/* FORZAR TODOS LOS TEXTOS DE BOTONES - SIGUIENDO PATRÓN DE OTROS COMPONENTES */
+/* Asegurar texto correcto en botones */
 .btn-confirmar-pago *,
-.btn-cancelar-pago *,
-.btn-finalizar *,
-.btn-eliminar-table *,
-.btn-cantidad-table *,
-.btn-agregar * {
-  color: inherit !important;
-  -webkit-text-fill-color: inherit !important;
-}
-
-/* ELIMINAR CONFLICTOS DE WEBKIT - SIGUIENDO PATRÓN DE OTROS COMPONENTES */
-button,
-.btn,
-[class*="btn-"] {
-  text-shadow: none !important;
-  -webkit-text-fill-color: unset !important;
-}
-
-/* RESTAURAR COLORES ESPECÍFICOS DESPUÉS DEL RESET */
-.btn-agregar,
-.btn-confirmar-pago,
-.btn-cancelar-pago,
-.btn-finalizar,
-.btn-eliminar-table {
-  -webkit-text-fill-color: #ffffff !important;
-}
-
-.carrito-table th {
-  -webkit-text-fill-color: #ffffff !important;
-}
-
-.carrito-container h3,
-.pago-container h4 {
+.btn-cancelar-pago * {
+  color: #ffffff !important;
   -webkit-text-fill-color: #ffffff !important;
 }
 

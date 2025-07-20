@@ -6,6 +6,7 @@ import { ApiService } from '../services/api.service';
 interface VentaCompleta {
   id_venta: number;
   fecha_venta: string;
+  fecha_hora_formateada: string; // NUEVO campo
   total: number;
   pago_cliente: number;
   cambio: number;
@@ -103,15 +104,21 @@ export class VerVentas implements OnInit {
   }
 
   /**
-   * Determinar el turno basado en la hora
+   * Determinar el turno basado en la hora (VERSIÓN CORREGIDA CON ZONA HORARIA)
    */
   private determinarTurno(fechaVenta: string): string {
-    const fecha = new Date(fechaVenta);
-    const hora = fecha.getHours();
-    
-    if (hora >= 6 && hora < 14) return 'mañana';
-    if (hora >= 14 && hora < 22) return 'tarde';
-    return 'noche';
+    try {
+      const fecha = new Date(fechaVenta);
+      const fechaLocal = new Date(fecha.getTime() - (fecha.getTimezoneOffset() * 60000));
+      const hora = fechaLocal.getHours();
+      
+      if (hora >= 6 && hora < 14) return 'mañana';
+      if (hora >= 14 && hora < 22) return 'tarde';
+      return 'noche';
+    } catch (error) {
+      console.error('Error al determinar turno:', error);
+      return 'mañana'; // Default
+    }
   }
 
   /**
@@ -161,9 +168,8 @@ export class VerVentas implements OnInit {
   }
 
   /**
-   * MÉTODOS CORREGIDOS PARA ESTADÍSTICAS
+   * MÉTODOS PARA ESTADÍSTICAS
    */
-
   calcularVentaMinima(): number {
     if (this.ventasFiltradas.length === 0) return 0;
     return Math.min(...this.ventasFiltradas.map(v => v.total));
@@ -172,6 +178,31 @@ export class VerVentas implements OnInit {
   calcularVentaMaxima(): number {
     if (this.ventasFiltradas.length === 0) return 0;
     return Math.max(...this.ventasFiltradas.map(v => v.total));
+  }
+
+  /**
+   * Formatear fecha de venta con zona horaria local
+   */
+  formatearFechaVenta(fechaVenta: string): string {
+    try {
+      const fecha = new Date(fechaVenta);
+      
+      // Ajustar para zona horaria de México (UTC-6)
+      const fechaLocal = new Date(fecha.getTime() - (fecha.getTimezoneOffset() * 60000));
+      
+      // Formato: DD/MM/YYYY HH:mm
+      return fechaLocal.toLocaleDateString('es-MX', {
+        day: '2-digit',
+        month: '2-digit',
+        year: 'numeric',
+        hour: '2-digit',
+        minute: '2-digit',
+        hour12: false
+      });
+    } catch (error) {
+      console.error('Error al formatear fecha:', error);
+      return fechaVenta; // Devolver original si hay error
+    }
   }
 
   /**

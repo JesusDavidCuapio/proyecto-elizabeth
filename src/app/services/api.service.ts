@@ -6,7 +6,7 @@ import { Observable } from 'rxjs';
   providedIn: 'root'
 })
 export class ApiService {
-private baseUrl = 'https://proyecto-elizabeth-backend-production.up.railway.app/api';
+private baseUrl = 'http://localhost:3000/api';
   
   constructor(private http: HttpClient) {}
 
@@ -80,9 +80,9 @@ private baseUrl = 'https://proyecto-elizabeth-backend-production.up.railway.app/
   }
 
   // Eliminar empleado
-  eliminarEmpleado(id: string): Observable<any> {
-    return this.http.delete<any>(`${this.baseUrl}/empleados/${id}`);
-  }
+  eliminarEmpleado(idEmpleado: string): Observable<any> {
+  return this.http.delete(`${this.baseUrl}/empleados/${idEmpleado}`);
+}
 
   // Buscar empleados
   buscarEmpleados(termino: string): Observable<any> {

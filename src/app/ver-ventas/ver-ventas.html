@@ -107,9 +107,9 @@
         </tr>
       </thead>
       <tbody>
-        <tr *ngFor="let venta of ventasFiltradas; trackBy: trackByFn">
+<tr *ngFor="let venta of ventasFiltradas; trackBy: trackByFn">
           <td><strong>{{ venta.id_venta }}</strong></td>
-          <td>{{ venta.fecha_venta | date:'dd/MM/yyyy HH:mm' }}</td>
+          <td><strong>{{ venta.fecha_hora_formateada }}</strong></td>
           <td>{{ venta.empleado_nombre }}</td>
           <td class="productos-cell">
             <span class="productos-lista">{{ venta.productos }}</span>

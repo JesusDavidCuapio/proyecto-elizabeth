@@ -1,0 +1,59 @@
+/* Contenedor para los botones lado a lado */
+.buttons-container {
+  display: flex;
+  gap: 15px;
+  justify-content: space-between;
+  margin-top: 20px;
+}
+
+/* Estilos específicos para los botones del home */
+.btn-left,
+.btn-right {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  min-height: 50px;
+  font-size: 15px;
+}
+
+/* Iconos dentro de los botones */
+.btn-icon {
+  font-size: 18px;
+  display: inline-block;
+}
+
+/* Botón izquierdo - Iniciar Sesión */
+.btn-left {
+  background: linear-gradient(135deg, #2a9d8f, #264653);
+}
+
+.btn-left:hover {
+  background: linear-gradient(135deg, #238b7a, #1d3a42);
+  transform: translateY(-2px) scale(1.02);
+}
+
+/* Botón derecho - Crear Perfil */
+.btn-right {
+  background: linear-gradient(135deg, #e9c46a, #f4a261);
+}
+
+.btn-right:hover {
+  background: linear-gradient(135deg, #dab651, #e09448);
+  transform: translateY(-2px) scale(1.02);
+}
+
+/* Responsive para pantallas pequeñas */
+@media (max-width: 480px) {
+  .buttons-container {
+    flex-direction: column;
+    gap: 12px;
+  }
+  
+  .btn-left,
+  .btn-right {
+    flex: none;
+    width: 100%;
+  }
+}
